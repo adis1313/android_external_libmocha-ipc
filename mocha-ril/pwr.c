@@ -92,7 +92,7 @@ void ril_request_radio_power(RIL_Token t, void *data, size_t datalen)
 		tapi_set_offline_mode(TAPI_NETWORK_OFFLINE_MODE_OFF);
 		/* This is an utterly ugly hack-around */
 		ril_data.state.power_state = POWER_STATE_NORMAL;
-		ril_data.state.radio_state = RADIO_STATE_ON;
+		ril_data.state.radio_state = RADIO_STATE_SIM_READY;
 		network_start();
 		ril_request_complete(t, RIL_E_SUCCESS, NULL, 0);
 	}
