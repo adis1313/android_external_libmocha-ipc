@@ -31,7 +31,7 @@
 
 void ipc_log_handler(const char *message, void *user_data)
 {
-	ALOGD("ipc: %s", message);
+	LOGD("ipc: %s", message);
 }
 
 /**
@@ -42,12 +42,12 @@ void ipc_send(struct modem_io *request)
 {
 	struct ipc_client *ipc_client;
 	if(ril_data.ipc_packet_client == NULL) {
-		ALOGE("ipc_packet_client is null, aborting!");
+		LOGE("ipc_packet_client is null, aborting!");
 		return;
 	}
 
 	if(ril_data.ipc_packet_client->data == NULL) {
-		ALOGE("ipc_packet_client data is null, aborting!");
+		LOGE("ipc_packet_client data is null, aborting!");
 		return;
 	}
 
@@ -63,12 +63,12 @@ int ipc_modem_io(void *data, uint32_t cmd)
 	int retval;
 	struct ipc_client *ipc_client;
 	if(ril_data.ipc_packet_client == NULL) {
-		ALOGE("ipc_packet_client is null, aborting!");
+		LOGE("ipc_packet_client is null, aborting!");
 		return -1;
 	}
 
 	if(ril_data.ipc_packet_client->data == NULL) {
-		ALOGE("ipc_packet_client data is null, aborting!");
+		LOGE("ipc_packet_client data is null, aborting!");
 		return -1;
 	}
 
@@ -89,12 +89,12 @@ int ipc_read_loop(struct ril_client *client)
 	fd_set fds;
 
 	if(client == NULL) {
-		ALOGE("client is NULL, aborting!");
+		LOGE("client is NULL, aborting!");
 		return -1;
 	}
 
 	if(client->data == NULL) {
-		ALOGE("client data is NULL, aborting!");
+		LOGE("client data is NULL, aborting!");
 		return -1;
 	}
 
@@ -104,11 +104,11 @@ int ipc_read_loop(struct ril_client *client)
 	FD_ZERO(&fds);
 	FD_SET(ipc_client_fd, &fds);
 
-	ALOGI("Starting read loop, fd = %d", ipc_client_fd);
+	LOGI("Starting read loop, fd = %d", ipc_client_fd);
 
 	while(1) {
 		if(ipc_client_fd < 0) {
-			ALOGE("IPC client fd is negative, aborting!");
+			LOGE("IPC client fd is negative, aborting!");
 			return -1;
 		}
 
@@ -118,7 +118,7 @@ int ipc_read_loop(struct ril_client *client)
 			RIL_CLIENT_LOCK(client);
 			if(ipc_client_recv(ipc_client, &resp) < 0) {
 				RIL_CLIENT_UNLOCK(client);
-				ALOGE("IPC recv failed, aborting!");
+				LOGE("IPC recv failed, aborting!");
 				return -1;
 			}
 			RIL_CLIENT_UNLOCK(client);
@@ -131,7 +131,7 @@ int ipc_read_loop(struct ril_client *client)
 				free(resp.data);
 		}
 	}
-	ALOGI("Exiting read loop");
+	LOGI("Exiting read loop");
 
 	return 0;
 }
@@ -151,59 +151,59 @@ int ipc_create(struct ril_client *client)
 
 	ipc_client = (struct ipc_client *) client_object->ipc_client;
 
-	ALOGD("Creating new client");
+	LOGD("Creating new client");
 	ipc_client = ipc_client_new();
 
 	if(ipc_client == NULL) {
-		ALOGE("Client creation failed!");
+		LOGE("Client creation failed!");
 		return -1;
 	}
 
 	client_object->ipc_client = ipc_client;
 
-	ALOGD("Setting log handler");
+	LOGD("Setting log handler");
 	rc = ipc_client_set_log_handler(ipc_client, ipc_log_handler, NULL);
 
 	if(rc < 0) {
-		ALOGE("Setting log handler failed!");
+		LOGE("Setting log handler failed!");
 		return -1;
 	}
 
 	// ipc_client_set_handlers
 
-	ALOGD("Creating handlers common data");
+	LOGD("Creating handlers common data");
 	rc = ipc_client_create_handlers_common_data(ipc_client);
 
 	if(rc < 0) {
-		ALOGE("Creating handlers common data failed!");
+		LOGE("Creating handlers common data failed!");
 		return -1;
 	}
 
-	ALOGD("Starting modem bootstrap");
+	LOGD("Starting modem bootstrap");
 	rc = ipc_client_bootstrap_modem(ipc_client);
 
 	if(rc < 0) {
-		ALOGE("Modem bootstrap failed!");
+		LOGE("Modem bootstrap failed!");
 		return -1;
 	}
 
-	ALOGD("Client open...");
+	LOGD("Client open...");
 	if(ipc_client_open(ipc_client)) {
-		ALOGE("%s: failed to open ipc client", __FUNCTION__);
+		LOGE("%s: failed to open ipc client", __FUNCTION__);
 		return -1;
 	}
 
-	ALOGD("Obtaining ipc_client_fd");
+	LOGD("Obtaining ipc_client_fd");
 	ipc_client_fd = ipc_client_get_handlers_common_data_fd(ipc_client);
 	client_object->ipc_client_fd = ipc_client_fd;
 
 	if(ipc_client_fd < 0) {
-		ALOGE("%s: client_fd is negative, aborting", __FUNCTION__);
+		LOGE("%s: client_fd is negative, aborting", __FUNCTION__);
 		return -1;
 	}
 
 
-	ALOGD("IPC client done");
+	LOGD("IPC client done");
 
 	return 0;
 }
@@ -214,15 +214,15 @@ int ipc_destroy(struct ril_client *client)
 	int ipc_client_fd;
 	int rc;
 
-	ALOGD("Destroying ipc client");
+	LOGD("Destroying ipc client");
 
 	if(client == NULL) {
-		ALOGE("client was already destroyed");
+		LOGE("client was already destroyed");
 		return 0;
 	}
 
 	if(client->data == NULL) {
-		ALOGE("client data was already destroyed");
+		LOGE("client data was already destroyed");
 		return 0;
 	}
 

@@ -66,7 +66,7 @@ void bt_addr_info(uint8_t *data)
 	fd = open(RIL_BDADDR_PATH, O_WRONLY|O_CREAT|O_TRUNC, 0660|0660|0660);
 	if (fd < 0) {
 		fprintf(stderr, "open(%s) failed\n", RIL_BDADDR_PATH);
-		ALOGE("Can't open %s\n", RIL_BDADDR_PATH);
+		LOGE("Can't open %s\n", RIL_BDADDR_PATH);
 		return;
 	}
 	write(fd, bdaddr, 18);

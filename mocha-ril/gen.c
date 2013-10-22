@@ -137,18 +137,18 @@ void ipc_gen_phone_res(struct ipc_message_info *info)
 
 	// In this case, it can be a real error or we just didn't queue
 	if(id < 0) {
-		ALOGD("aseq: 0x%x not found in the IPC_GEN_PHONE_RES queue", info->aseq);
+		LOGD("aseq: 0x%x not found in the IPC_GEN_PHONE_RES queue", info->aseq);
 		return;
 	}
 
-	ALOGD("aseq: 0x%x found in the IPC_GEN_PHONE_RES queue!", info->aseq);
+	LOGD("aseq: 0x%x found in the IPC_GEN_PHONE_RES queue!", info->aseq);
 
 	if(ipc_gen_phone_res_expects[id].command != IPC_COMMAND(phone_res)) {
-		ALOGE("IPC_GEN_PHONE_RES aseq (0x%x) doesn't match the queued one with command (0x%x)", 
+		LOGE("IPC_GEN_PHONE_RES aseq (0x%x) doesn't match the queued one with command (0x%x)", 
 				ipc_gen_phone_res_expects[id].aseq, ipc_gen_phone_res_expects[id].command);
 
 		if(ipc_gen_phone_res_expects[id].func != NULL) {
-			ALOGE("Not safe to run the custom function, reporting generic failure");
+			LOGE("Not safe to run the custom function, reporting generic failure");
 			ril_request_complete(reqGetToken(ipc_gen_phone_res_expects[id].aseq), RIL_E_GENERIC_FAILURE, NULL, 0);
 		}
 	}

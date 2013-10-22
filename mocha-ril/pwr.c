@@ -75,20 +75,20 @@ void ril_request_radio_power(RIL_Token t, void *data, size_t datalen)
 	int power_state = *((int *)data);
 	unsigned short power_data;
 	/* TODO: fix it, implement LPM mode? */
-	ALOGD("%s: requested power_state is %d", __func__, power_state);
+	LOGD("%s: requested power_state is %d", __func__, power_state);
 	if(ril_data.state.power_state == POWER_STATE_OFF) {
-		ALOGD("%s: current power state OFF, returning RADIO_NOT_AVAILABLE", __func__);
+		LOGD("%s: current power state OFF, returning RADIO_NOT_AVAILABLE", __func__);
 		ril_request_complete(t, RIL_E_RADIO_NOT_AVAILABLE, NULL, 0);
 		return;
 	}
 	if(power_state <= 0) {
-		ALOGD("Request power to OFF");
+		LOGD("Request power to OFF");
 		ril_data.state.power_state = POWER_STATE_LPM;
 		ril_data.state.radio_state = RADIO_STATE_OFF;
 		tapi_set_offline_mode(TAPI_NETWORK_OFFLINE_MODE_ON);
 		ril_request_complete(t, RIL_E_SUCCESS, NULL, 0);
 	} else {	
-		ALOGD("Request power to NORMAL");
+		LOGD("Request power to NORMAL");
 		tapi_set_offline_mode(TAPI_NETWORK_OFFLINE_MODE_OFF);
 		/* This is an utterly ugly hack-around */
 		ril_data.state.power_state = POWER_STATE_NORMAL;

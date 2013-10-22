@@ -32,7 +32,7 @@ void ril_request_get_imei(RIL_Token t)
 	if(cached_imei[0] != 0x00) {
 		ril_request_complete(t, RIL_E_SUCCESS, cached_imei, sizeof(cached_imei));
 	} else {
-		ALOGD("%s: Not ready yet, queuing token!", __func__);
+		LOGD("%s: Not ready yet, queuing token!", __func__);
 		ril_data.tokens.get_imei = t;
 	}
 }
@@ -42,7 +42,7 @@ void ril_request_baseband_version(RIL_Token t)
 	if(ril_data.cached_sw_version[0] != 0x00) {
 		ril_request_complete(t, RIL_E_SUCCESS, ril_data.cached_sw_version, sizeof(ril_data.cached_sw_version));
 	} else {
-		ALOGD("%s: Not ready yet, queuing token!", __func__);
+		LOGD("%s: Not ready yet, queuing token!", __func__);
 		ril_data.tokens.baseband_version = t;
 	}
 }
@@ -75,7 +75,7 @@ void ril_request_get_imsi(RIL_Token t)
 		ril_request_complete(t, RIL_E_SUCCESS, ril_data.cached_imsi, sizeof(ril_data.cached_imsi));
 		ril_data.tokens.get_imsi = 0;
 	} else {
-		ALOGD("%s: Not ready yet, queuing token!", __func__);
+		LOGD("%s: Not ready yet, queuing token!", __func__);
 		ril_data.tokens.get_imsi = t;
 	}
 }

@@ -300,7 +300,7 @@ void srs_dispatch(struct srs_message *message)
 			srs_snd_pcm_if_ctrl(message);
 			break;
 		default:
-			ALOGD("Unhandled command: (%04x)", message->command);
+			LOGD("Unhandled command: (%04x)", message->command);
 			break;
 	}
 	
@@ -323,11 +323,11 @@ void ril_on_request(int request, void *data, size_t datalen, RIL_Token t)
 	int check;
 
 	RIL_LOCK();
-	ALOGV("Request from RILD ID - %d", request);
+	LOGV("Request from RILD ID - %d", request);
 	check = ril_modem_check();
 	if(check < 0)
 	{
-		ALOGE("ril_modem_check() returned %d => replying RIL_E_RADIO_NOT_AVAILABLE", check);
+		LOGE("ril_modem_check() returned %d => replying RIL_E_RADIO_NOT_AVAILABLE", check);
 		ril_request_complete(t, RIL_E_RADIO_NOT_AVAILABLE, NULL, 0);
 	}
 
@@ -484,7 +484,7 @@ void ril_on_request(int request, void *data, size_t datalen, RIL_Token t)
 			break;
 
 		default:
-			ALOGE("Request not implemented: %d", request);
+			LOGE("Request not implemented: %d", request);
 			ril_request_complete(t, RIL_E_REQUEST_NOT_SUPPORTED, NULL, 0);
 			break;
 	}
@@ -591,46 +591,46 @@ const RIL_RadioFunctions *RIL_Init(const struct RIL_Env *env, int argc, char **a
 	ipc_init();
 	ril_install_ipc_callbacks();
 
-	ALOGI("Creating IPC client");
+	LOGI("Creating IPC client");
 
 	ipc_packet_client = ril_client_new(&ipc_client_funcs);
 	rc = ril_client_create(ipc_packet_client);
 
 	if(rc < 0) {
-		ALOGE("IPC client creation failed.");
+		LOGE("IPC client creation failed.");
 		goto srs;
 	}
 
 	rc = ril_client_thread_start(ipc_packet_client);
 
 	if(rc < 0) {
-		ALOGE("IPC thread creation failed.");
+		LOGE("IPC thread creation failed.");
 		goto srs;
 	}
 
 	ril_data.ipc_packet_client = ipc_packet_client;
-	ALOGI("IPC client ready");
+	LOGI("IPC client ready");
 	
 srs:
-	ALOGD("Creating SRS client");
+	LOGD("Creating SRS client");
 
 	srs_client = ril_client_new(&srs_client_funcs);
 	rc = ril_client_create(srs_client);
 
 	if(rc < 0) {
-		ALOGE("SRS client creation failed.");
+		LOGE("SRS client creation failed.");
 		goto end;
 	}
 
 	rc = ril_client_thread_start(srs_client);
 
 	if(rc < 0) {
-		ALOGE("SRS thread creation failed.");
+		LOGE("SRS thread creation failed.");
 		goto end;
 	}
 
 	ril_data.srs_client = srs_client;
-	ALOGD("SRS client ready");
+	LOGD("SRS client ready");
 
 end:
 	ril_data.state.radio_state = RADIO_STATE_OFF;

@@ -280,7 +280,7 @@ void hex_dump(void *data, int size)
 
 		if(n%16 == 0) {
 			/* line completed */
-			ALOGD("[%4.4s]   %-50.50s  %s", addrstr, hexstr, charstr);
+			LOGD("[%4.4s]   %-50.50s  %s", addrstr, hexstr, charstr);
 			hexstr[0] = 0;
 			charstr[0] = 0;
 		} else if(n%8 == 0) {
@@ -293,7 +293,7 @@ void hex_dump(void *data, int size)
 
 	if (strlen(hexstr) > 0) {
 		/* print rest of buffer if not empty */
-		ALOGD("[%4.4s]   %-50.50s  %s\n", addrstr, hexstr, charstr);
+		LOGD("[%4.4s]   %-50.50s  %s\n", addrstr, hexstr, charstr);
 	}
 }
 
@@ -383,7 +383,7 @@ int tun_alloc(char *dev, int flags)
 	if( (fd = open(clonedev, O_RDWR)) < 0 ) {
 		return fd;
 	}
-	ALOGD("Clonedevice %s opened with fd %d, trying to create %s with flags 0x%X", clonedev, fd, dev, flags);
+	LOGD("Clonedevice %s opened with fd %d, trying to create %s with flags 0x%X", clonedev, fd, dev, flags);
 
 	/* preparation of the struct ifr, of type "struct ifreq" */
 	memset(&ifr, 0, sizeof(ifr));
@@ -432,11 +432,11 @@ int load_ril_config()
 	n = read(fd, &ril_data.config, sizeof(ril_config));
 	if(n != sizeof(ril_config))
 		goto error;
-	ALOGD("%s: Read %d bytes from %s", __func__, n, RIL_CONFIG_PATH);
+	LOGD("%s: Read %d bytes from %s", __func__, n, RIL_CONFIG_PATH);
 	close(fd);
 	return 0;
 error:
-	ALOGE("%s: Read only %d of %d bytes from %s", __func__, n, sizeof(ril_config), RIL_CONFIG_PATH);
+	LOGE("%s: Read only %d of %d bytes from %s", __func__, n, sizeof(ril_config), RIL_CONFIG_PATH);
 	close(fd);
 	return -1;
 }
@@ -447,18 +447,18 @@ int save_ril_config()
 	int fd, n;
 
 	if( (fd = open(RIL_CONFIG_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0666)) < 0 ) {
-		ALOGE("%s: Couldn't open %s for writing, errno: %d", __func__, RIL_CONFIG_PATH, errno);
+		LOGE("%s: Couldn't open %s for writing, errno: %d", __func__, RIL_CONFIG_PATH, errno);
 		return fd;
 	}
 
 	n = write(fd, &ril_data.config, sizeof(ril_config));
 	if(n != sizeof(ril_config))
 		goto error;
-	ALOGD("%s: Written %d bytes to %s", __func__, n, RIL_CONFIG_PATH);
+	LOGD("%s: Written %d bytes to %s", __func__, n, RIL_CONFIG_PATH);
 	close(fd);
 	return 0;
 error:
-	ALOGE("%s: Wrote only %d of %d bytes to %s", __func__, n, sizeof(ril_config), RIL_CONFIG_PATH);
+	LOGE("%s: Wrote only %d of %d bytes to %s", __func__, n, sizeof(ril_config), RIL_CONFIG_PATH);
 	close(fd);
 	return -1;
 }

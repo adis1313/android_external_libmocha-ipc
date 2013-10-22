@@ -414,7 +414,7 @@ void lock_status(uint8_t *lockStatus)
 
 void sim_get_data_from_modem(uint8_t hSim, sim_data_request *sim_data)
 {
-	ALOGE("%s: test me!", __func__);
+	LOGE("%s: test me!", __func__);
 	//TODO: verify, create and initialize session, send real hSim
 	uint8_t *data;
 
@@ -428,7 +428,7 @@ void sim_get_data_from_modem(uint8_t hSim, sim_data_request *sim_data)
 
 void sim_data_request_to_modem(uint8_t hSim, uint16_t simDataType)
 {
-	ALOGE("%s: test me!", __func__);
+	LOGE("%s: test me!", __func__);
 	//TODO: verify, create and initialize session, send real hSim
 	uint8_t *data;
 

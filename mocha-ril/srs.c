@@ -218,13 +218,13 @@ int srs_client_send_message(struct srs_client_data *client_data, struct srs_mess
 	rc = select(client_data->client_fd + 1, NULL, &fds, NULL, &timeout);
 
 	if (!FD_ISSET(client_data->client_fd, &fds)) {
-		ALOGE("SRS write select failed on fd %d", client_data->client_fd);
+		LOGE("SRS write select failed on fd %d", client_data->client_fd);
 		goto error;
 	}
 
 	rc = write(client_data->client_fd, data, header.length);
 	if (rc < (int) sizeof(struct srs_header)) {
-		ALOGE("SRS write failed on fd %d with %d bytes", client_data->client_fd, rc);
+		LOGE("SRS write failed on fd %d with %d bytes", client_data->client_fd, rc);
 		goto error;
 	}
 
@@ -255,7 +255,7 @@ int srs_client_send(struct srs_client_data *client_data, unsigned short command,
 	RIL_CLIENT_UNLOCK(client_data->client);
 
 	if (rc <= 0) {
-		ALOGD("SRS client with fd %d terminated", client_data->client_fd);
+		LOGD("SRS client with fd %d terminated", client_data->client_fd);
 
 		client = srs_client_info_find_fd(client_data, client_data->client_fd);
 		if (client != NULL)
@@ -277,11 +277,11 @@ int srs_send(unsigned short command, void *data, int length)
 
 	client_data = (struct srs_client_data *) ril_data.srs_client->data;
 
-	ALOGD("SEND SRS: fd=%d command=%d length=%d", client_data->client_fd, command, length);
+	LOGD("SEND SRS: fd=%d command=%d length=%d", client_data->client_fd, command, length);
 	if (data != NULL && length > 0) {
-		ALOGD("==== SRS DATA DUMP ====");
+		LOGD("==== SRS DATA DUMP ====");
 		hex_dump(data, length);
-		ALOGD("=======================");
+		LOGD("=======================");
 	}
 
 	return srs_client_send(client_data, command, data, length);
@@ -315,13 +315,13 @@ int srs_client_recv(struct srs_client_data *client_data, struct srs_message *mes
 	rc = select(client_data->client_fd + 1, &fds, NULL, NULL, &timeout);
 
 	if (!FD_ISSET(client_data->client_fd, &fds)) {
-		ALOGE("SRS read select failed on fd %d", client_data->client_fd);
+		LOGE("SRS read select failed on fd %d", client_data->client_fd);
 		goto error;
 	}
 
 	rc = read(client_data->client_fd, data, SRS_DATA_MAX_SIZE);
 	if (rc < (int) sizeof(struct srs_header)) {
-		ALOGE("SRS read failed on fd %d with %d bytes", client_data->client_fd, rc);
+		LOGE("SRS read failed on fd %d with %d bytes", client_data->client_fd, rc);
 		goto error;
 	}
 
@@ -418,7 +418,7 @@ void *srs_client_read_loop(void *data)
 			RIL_CLIENT_LOCK(client_data->client);
 			rc = srs_client_recv(client_data, &message);
 			if (rc <= 0) {
-				ALOGD("SRS client with fd %d terminated", fd);
+				LOGD("SRS client with fd %d terminated", fd);
 
 				client = srs_client_info_find_fd(client_data, fd);
 				if (client != NULL)
@@ -430,11 +430,11 @@ void *srs_client_read_loop(void *data)
 			}
 			RIL_CLIENT_UNLOCK(client_data->client);
 
-			ALOGD("RECV SRS: fd=%d command=%d length=%d", fd, message.command, message.length);
+			LOGD("RECV SRS: fd=%d command=%d length=%d", fd, message.command, message.length);
 			if (message.data != NULL && message.length > 0) {
-				ALOGD("==== SRS DATA DUMP ====");
+				LOGD("==== SRS DATA DUMP ====");
 				hex_dump(message.data, message.length);
-				ALOGD("=======================");
+				LOGD("=======================");
 			}
 
 			srs_dispatch(&message);
@@ -473,7 +473,7 @@ int srs_read_loop(struct ril_client *client)
 
 	rc = pthread_create(&client_data->thread, &attr, srs_client_read_loop, (void *) client_data);
 	if (rc < 0) {
-		ALOGE("Unable to create SRS client read loop thread");
+		LOGE("Unable to create SRS client read loop thread");
 		return -1;
 	}
 
@@ -481,7 +481,7 @@ int srs_read_loop(struct ril_client *client)
 		fd = accept(client_data->server_fd, (struct sockaddr *) &client_addr,
 			&client_addr_len);
 		if (fd < 0) {
-			ALOGE("Unable to accept new SRS client");
+			LOGE("Unable to accept new SRS client");
 			break;
 		}
 
@@ -489,18 +489,18 @@ int srs_read_loop(struct ril_client *client)
 		flags |= O_NONBLOCK;
 		fcntl(fd, F_SETFL, flags);
 
-		ALOGD("Accepted new SRS client from fd %d", fd);
+		LOGD("Accepted new SRS client from fd %d", fd);
 
 		SRS_CLIENT_LOCK();
 		rc = srs_client_register(client_data, fd);
 		SRS_CLIENT_UNLOCK();
 		if (rc < 0) {
-			ALOGE("Unable to register SRS client");
+			LOGE("Unable to register SRS client");
 			break;
 		}
 	}
 
-	ALOGE("SRS server failure");
+	LOGE("SRS server failure");
 
 	client_data->running = 0;
 
@@ -517,19 +517,19 @@ int srs_create(struct ril_client *client)
 	if (client == NULL)
 		return -1;
 
-	ALOGD("Creating new SRS client");
+	LOGD("Creating new SRS client");
 
 	signal(SIGPIPE, SIG_IGN);
 
 	client_data = (struct srs_client_data *) calloc(1, sizeof(struct srs_client_data));
 	if (client_data == NULL) {
-		ALOGE("SRS client data creation failed");
+		LOGE("SRS client data creation failed");
 		return -1;
 	}
 
 	client_data->server_fd = srs_server_open();
 	if (client_data->server_fd < 0) {
-		ALOGE("SRS server creation failed");
+		LOGE("SRS server creation failed");
 		goto fail;
 	}
 

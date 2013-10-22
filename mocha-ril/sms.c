@@ -34,7 +34,7 @@
 
 void ipc_sms_send_status(void* data)
 {
-	ALOGE("%s: test me!", __func__);
+	LOGE("%s: test me!", __func__);
 	tapiNettextCallBack* callBack = (tapiNettextCallBack*)(data);
 
 	RIL_SMS_Response response;
@@ -94,13 +94,13 @@ void ril_request_send_sms(RIL_Token t, void *data, size_t length)
 	smsc = (unsigned char *) strdup((char *) ril_data.smsc_number);
 
 	if (pdu == NULL || pdu_length <= 0 || smsc == NULL || smsc_length <= 0) {
-		ALOGE("Provided PDU or SMSC is invalid! Aborting");
+		LOGE("Provided PDU or SMSC is invalid! Aborting");
 		ril_request_complete(t, RIL_E_GENERIC_FAILURE, NULL, 0);
 		return;
 	}
 
 	if ((pdu_length / 2 + smsc_length) > 0xfe) {
-		ALOGE("PDU or SMSC too large, aborting");
+		LOGE("PDU or SMSC too large, aborting");
 		ril_request_complete(t, RIL_E_GENERIC_FAILURE, NULL, 0);
 		return;
 	}
@@ -121,13 +121,13 @@ void ril_request_send_sms(RIL_Token t, void *data, size_t length)
 
 	if (pdu_tp_da_len > 0xff / 2) {
 
-		ALOGE("PDU TP-DA Len failed (0x%x)\n", pdu_tp_da_len);
+		LOGE("PDU TP-DA Len failed (0x%x)\n", pdu_tp_da_len);
 
 		goto pdu_end;
 
 	}
 
-	ALOGD("PDU TP-DA Len is 0x%x\n", pdu_tp_da_len);
+	LOGD("PDU TP-DA Len is 0x%x\n", pdu_tp_da_len);
 
 	int pdu_tp_udh_index = pdu_tp_da_index + pdu_tp_da_len / 2 + 5;
 
@@ -139,13 +139,13 @@ void ril_request_send_sms(RIL_Token t, void *data, size_t length)
 
 	if (pdu_tp_udh_len > 0xff / 2 || pdu_tp_udh_len < 5) {
 
-		ALOGE("PDU TP-UDH Len failed (0x%x)\n", pdu_tp_udh_len);
+		LOGE("PDU TP-UDH Len failed (0x%x)\n", pdu_tp_udh_len);
 
 		goto pdu_end;
 
 	}
 
-	ALOGD("PDU TP-UDH Len is 0x%x\n", pdu_tp_udh_len);
+	LOGD("PDU TP-UDH Len is 0x%x\n", pdu_tp_udh_len);
 
 	int pdu_tp_udh_num_index = pdu_tp_udh_index + 4;
 
@@ -153,7 +153,7 @@ void ril_request_send_sms(RIL_Token t, void *data, size_t length)
 
 	if (pdu_tp_udh_num > 0xf) {
 
-		ALOGE("PDU TP-UDH Num failed (0x%x)\n", pdu_tp_udh_num);
+		LOGE("PDU TP-UDH Num failed (0x%x)\n", pdu_tp_udh_num);
 
 		goto pdu_end;
 
@@ -165,17 +165,17 @@ void ril_request_send_sms(RIL_Token t, void *data, size_t length)
 
 	if (pdu_tp_udh_seq > 0xf || pdu_tp_udh_seq > pdu_tp_udh_num) {
 
-		ALOGE("PDU TP-UDH Seq failed (0x%x)\n", pdu_tp_udh_seq);
+		LOGE("PDU TP-UDH Seq failed (0x%x)\n", pdu_tp_udh_seq);
 
 		goto pdu_end;
 
 	}
 
-	ALOGD("We are sending message %d on %d\n", pdu_tp_udh_seq, pdu_tp_udh_num);
+	LOGD("We are sending message %d on %d\n", pdu_tp_udh_seq, pdu_tp_udh_num);
 
 	if (pdu_tp_udh_num > 1) {
 
-		ALOGD("We are sending a multi-part message!");
+		LOGD("We are sending a multi-part message!");
 
 		send_msg_type = 1; //multi-part
 

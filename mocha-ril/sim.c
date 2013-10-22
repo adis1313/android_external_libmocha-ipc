@@ -63,7 +63,7 @@ void ipc_sim_open(void *data)
 
 void ipc_sim_status(void *data)
 {
-	ALOGE("%s: test me!", __func__);
+	LOGE("%s: test me!", __func__);
 
 	ril_sim_state sim_state;
 	sim_state = (int) data;
@@ -83,7 +83,7 @@ void ipc_sim_status(void *data)
 
 void ipc_lock_status(void* data)
 {
-	ALOGE("%s: test me!", __func__);
+	LOGE("%s: test me!", __func__);
 	lockStatus* pinSt = (lockStatus*)(data);
 	int attempts = -1;
 	switch(pinSt->status){
@@ -113,7 +113,7 @@ void ipc_lock_status(void* data)
 			}
 			else
 			{
-				ALOGE("%s: Received correct password info but no CHV token is active.", __func__);
+				LOGE("%s: Received correct password info but no CHV token is active.", __func__);
 			}
 			return;
 		case 1:
@@ -141,7 +141,7 @@ void ipc_lock_status(void* data)
 			}
 			else
 			{
-				ALOGE("%s: Received wrong password info but no CHV token is active.", __func__);
+				LOGE("%s: Received wrong password info but no CHV token is active.", __func__);
 			}
 			return;
 		case 2:
@@ -171,7 +171,7 @@ void ipc_lock_status(void* data)
 			}
 			else
 			{
-				ALOGE("%s: Received no attempts left info but no CHV token is active.", __func__);
+				LOGE("%s: Received no attempts left info but no CHV token is active.", __func__);
 			}
 			return;
 	}
@@ -179,7 +179,7 @@ void ipc_lock_status(void* data)
 
 void ipc_sim_io_response(void* data)
 {
-	ALOGE("%s: test me!", __func__);
+	LOGE("%s: test me!", __func__);
 
 	char *response;
 	char tmp[3];
@@ -190,8 +190,8 @@ void ipc_sim_io_response(void* data)
 
 	sim_data_response* resp = (sim_data_response*)(data);
 
-	ALOGE("%s: FileId = %X", __func__, resp->simDataType);
-	ALOGE("%s: bufLen = %d", __func__, resp->bufLen);
+	LOGE("%s: FileId = %X", __func__, resp->simDataType);
+	LOGE("%s: bufLen = %d", __func__, resp->bufLen);
 
 	buf = (uint8_t *)data + sizeof(sim_data_response);
 
@@ -224,7 +224,7 @@ void ipc_sim_io_response(void* data)
 
 void ril_request_get_sim_status(RIL_Token t)
 {
-	ALOGE("%s: test me!", __func__);
+	LOGE("%s: test me!", __func__);
 
 	RIL_CardStatus_v6 card_status;
 	ril_sim_state sim_state;
@@ -340,7 +340,7 @@ void ril_request_enter_sim_pin(RIL_Token t, void *data, size_t datalen)
 	char *pin = ((char **) data)[0];
 
 	if (strlen(data) > 16) {
-		ALOGE("%s: pin exceeds maximum length", __FUNCTION__);
+		LOGE("%s: pin exceeds maximum length", __FUNCTION__);
 		ril_request_complete(t, RIL_E_GENERIC_FAILURE, NULL, 0);
 	}
 	sim_verify_chv(0x4, 0x0, pin);
@@ -378,7 +378,7 @@ void ril_request_query_facility_lock(RIL_Token t, void *data, size_t datalen)
 	if (!strcmp(facility, "SC")) {
 		ril_request_complete(t, RIL_E_SUCCESS, &ril_data.state.bPinLock, sizeof(int));
 	} else {
-	ALOGE("%s: unsupported facility: %s", __func__, facility);
+	LOGE("%s: unsupported facility: %s", __func__, facility);
 		goto error;
 	}
 	return;
@@ -387,7 +387,7 @@ error:
 }
 void ril_request_set_facility_lock(RIL_Token t, void *data, size_t datalen)
 {
-	ALOGE("%s: test me!", __func__);
+	LOGE("%s: test me!", __func__);
 
 	char *facility;
 	char *lock;
@@ -403,20 +403,20 @@ void ril_request_set_facility_lock(RIL_Token t, void *data, size_t datalen)
 	if (!strcmp(facility, "SC")) {
 		if (!strcmp(lock, "1"))
 		{
-		ALOGE("%s: Request for enabling PIN", __func__);
+		LOGE("%s: Request for enabling PIN", __func__);
 			//enable PIN lock
 			sim_disable_chv(0x4, 0x0, password);
 		}
 		else if (!strcmp(lock, "0"))
 		{
-		ALOGE("%s: Request for disabling PIN", __func__);
+		LOGE("%s: Request for disabling PIN", __func__);
 			//disable PIN Lock
 			sim_enable_chv(0x4, 0x0, password);
 		}
 	}
 	else
 	{
-		ALOGE("%s: unsupported facility: %s", __func__, facility);
+		LOGE("%s: unsupported facility: %s", __func__, facility);
 		goto error;
 	}
 	ril_data.tokens.set_facility_lock = t;
@@ -427,7 +427,7 @@ error:
 
 void ril_request_change_sim_pin(RIL_Token t, void *data, size_t datalen)
 {
-	ALOGE("%s: test me!", __func__);
+	LOGE("%s: test me!", __func__);
 	char *password_old;
 	char *password_new;
 

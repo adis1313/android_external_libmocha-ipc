@@ -84,13 +84,13 @@ void tapi_call_parser(uint16_t tapiCallType, uint32_t tapiCallLength, uint8_t *t
 			ipc_invoke_ril_cb(CALL_ERROR, (void*)tapiCallData);
 			break;
 		case TAPI_CALL_CONNECTED_NUMBER_IND:
-			ALOGE("TAPI_CALL_CONNECTED_NUMBER_IND: unused packet");
+			LOGE("TAPI_CALL_CONNECTED_NUMBER_IND: unused packet");
 			break;
 		case TAPI_CALL_SS_NOTIFY_IND:
-			ALOGE("TAPI_CALL_SS_NOTIFY_IND: unused packet");
+			LOGE("TAPI_CALL_SS_NOTIFY_IND: unused packet");
 			break;
 		case TAPI_CALL_CONNECTING_IND:
-			ALOGE("TAPI_CALL_CONNECTING_IND: unused packet");
+			LOGE("TAPI_CALL_CONNECTING_IND: unused packet");
 			break;
 		default:	
 			DEBUG_I("TapiCall Packet type 0x%X is not yet handled, len = 0x%x", tapiCallType, tapiCallLength);

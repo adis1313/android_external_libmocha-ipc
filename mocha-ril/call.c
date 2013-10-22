@@ -38,7 +38,7 @@ ril_call_context* find_active_call()
 			return ril_data.calls[i];
 		}
 	}
-	ALOGE("Cannot find active call context!");
+	LOGE("Cannot find active call context!");
 	return NULL;
 }
 
@@ -53,7 +53,7 @@ ril_call_context* new_ril_call_context()
 			return ril_data.calls[i];
 		}
 	}
-	ALOGE("No free call contexts!");
+	LOGE("No free call contexts!");
 	return NULL;
 }
 
@@ -67,7 +67,7 @@ ril_call_context* find_ril_call_context(uint32_t callId)
 			return ril_data.calls[i];
 		}
 	}
-	ALOGE("Call context with Id %d not found!", callId);
+	LOGE("Call context with Id %d not found!", callId);
 	return NULL;
 }
 
@@ -83,13 +83,13 @@ void release_ril_call_context(ril_call_context* ptr)
 			return;
 		}
 	}
-	ALOGE("Tried to release non registered call context!");
+	LOGE("Tried to release non registered call context!");
 }
 
 void ipc_call_incoming(void* data)
 {
 
-	ALOGE("%s: Test me!", __func__);
+	LOGE("%s: Test me!", __func__);
 
 	uint8_t newCallState = RIL_CALL_INCOMING;
 	int i;
@@ -106,8 +106,8 @@ void ipc_call_incoming(void* data)
 	ril_call_context* callCtxt = new_ril_call_context();
 	tapiCallInfo* callInfo = (tapiCallInfo*)(data);
 	
-	ALOGE("ipc_call_incoming: Incoming call received from %s", callInfo->phoneNumber);
-	ALOGE("ipc_call_incoming: callId = %d", callInfo->callId );
+	LOGE("ipc_call_incoming: Incoming call received from %s", callInfo->phoneNumber);
+	LOGE("ipc_call_incoming: callId = %d", callInfo->callId );
 	
 	if(!callCtxt)
 		return;
@@ -125,7 +125,7 @@ void ipc_call_end(void* data)
 {
 	ril_call_context* callCtxt;
 	tapiCallEnd* callEndInfo = (tapiCallEnd*)(data);
-	ALOGE("%s : Test me! callId = %d, cause = %d", __func__, callEndInfo->callId, callEndInfo->cause);
+	LOGE("%s : Test me! callId = %d, cause = %d", __func__, callEndInfo->callId, callEndInfo->cause);
 	callCtxt = find_ril_call_context(callEndInfo->callId);
 	if(!callCtxt)
 		return;
@@ -143,7 +143,7 @@ void ipc_call_setup_ind(void* data)
 {
 	ril_call_context* callCtxt;
 	uint32_t callId = *(uint32_t *)(data);
-	ALOGE("%s : Test me! callId = %d", __func__, callId);
+	LOGE("%s : Test me! callId = %d", __func__, callId);
 	callCtxt = find_ril_call_context(0xFFFFFFFF);
 	if(!callCtxt)
 		return;
@@ -161,7 +161,7 @@ void ipc_call_alert(void* data)
 	ril_call_context* callCtxt;
 	uint32_t callId = *(uint32_t *)(data);
 	uint32_t bAudioOn = *(uint32_t *)((uint8_t*)(data) + 4);
-	ALOGE("%s : Test me! callId = %d, bAudioOn = %d", __func__, callId, bAudioOn);
+	LOGE("%s : Test me! callId = %d, bAudioOn = %d", __func__, callId, bAudioOn);
 	callCtxt = find_ril_call_context(callId);
 	if(!callCtxt)
 		return;
@@ -189,12 +189,12 @@ void ipc_call_connected(void* data)
 
 void ipc_call_dtmf_start(void* data)
 {
-	ALOGE("%s: test me!", __func__);
+	LOGE("%s: test me!", __func__);
 
 	tapiDtmfCnf* dtmfCnf = (tapiDtmfCnf*)(data);
 
 	if (dtmfCnf->reason != 0) {
-		ALOGD("%s: Apparently, something went wrong with DTMF (code=0x%x)",__func__, dtmfCnf->reason);
+		LOGD("%s: Apparently, something went wrong with DTMF (code=0x%x)",__func__, dtmfCnf->reason);
 		goto error;
 	}
 
@@ -203,17 +203,17 @@ void ipc_call_dtmf_start(void* data)
 	return;
 
 error:
-	ALOGE("%s: Error!", __func__);
+	LOGE("%s: Error!", __func__);
 	ril_request_complete(ril_data.tokens.dtmf_start, RIL_E_GENERIC_FAILURE, NULL, 0);
 }
 
 void ipc_call_dtmf_stop(void* data)
 {
-	ALOGE("%s: test me!", __func__);
+	LOGE("%s: test me!", __func__);
 	tapiDtmfCnf* dtmfCnf = (tapiDtmfCnf*)(data);
 
 	if (dtmfCnf->reason != 0) {
-		ALOGD("%s: Apparently, something went wrong with DTMF (code=0x%x)", __func__, dtmfCnf->reason);
+		LOGD("%s: Apparently, something went wrong with DTMF (code=0x%x)", __func__, dtmfCnf->reason);
 		goto error;
 	}
 
@@ -222,7 +222,7 @@ void ipc_call_dtmf_stop(void* data)
 	return;
 
 error:
-	ALOGE("%s: Error!", __func__);
+	LOGE("%s: Error!", __func__);
 	ril_request_complete(ril_data.tokens.dtmf_stop, RIL_E_GENERIC_FAILURE, NULL, 0);
 }
 
@@ -230,7 +230,7 @@ void ipc_call_hold(void* data)
 {
 	ril_call_context* heldCtxt;
 	tapiCallEnd* holdCnf = (tapiCallEnd*)(data);
-	ALOGE("%s: test me!(callId:%d, cause:%d)", __func__, 
+	LOGE("%s: test me!(callId:%d, cause:%d)", __func__, 
 	holdCnf->callId, holdCnf->cause);
 	
 	heldCtxt = find_ril_call_context(holdCnf->callId);
@@ -250,7 +250,7 @@ void ipc_call_swap(void* data)
 {
 	ril_call_context* activatedCtxt, *heldCtxt;
 	tapiSwapCnf* swapCnf = (tapiSwapCnf*)(data);
-	ALOGE("%s: test me!(ActivatedCallNo:%d,HeldCallNo:%d, cause:%d)", __func__, 
+	LOGE("%s: test me!(ActivatedCallNo:%d,HeldCallNo:%d, cause:%d)", __func__, 
 	swapCnf->activatedCallId, swapCnf->heldCallId, swapCnf->cause);
 	
 	activatedCtxt = find_ril_call_context(swapCnf->activatedCallId);
@@ -277,7 +277,7 @@ void ipc_call_activate(void* data)
 {
 	ril_call_context* activatedCtxt;
 	tapiCallEnd* activateCnf = (tapiCallEnd*)(data);
-	ALOGE("%s: test me!(callNo:%d, cause:%d)", __func__, 
+	LOGE("%s: test me!(callNo:%d, cause:%d)", __func__, 
 	activateCnf->callId, activateCnf->cause);
 	
 	activatedCtxt = find_ril_call_context(activateCnf->callId);
@@ -297,7 +297,7 @@ void ipc_call_error(void* data)
 {
 	ril_call_context* errorCtxt;
 	tapiCallError* errorInd = (tapiCallError*)(data);
-	ALOGE("%s: test me!(callNo:%d, error:%d)", __func__, errorInd->callId, errorInd->error);
+	LOGE("%s: test me!(callNo:%d, error:%d)", __func__, errorInd->callId, errorInd->error);
 
 	errorCtxt = find_ril_call_context(errorInd->callId);
 	if(!errorCtxt)
@@ -362,7 +362,7 @@ void ril_request_dial(RIL_Token t, void *data, size_t datalen)
 	return;
 
 error:
-	ALOGE("%s: Error!", __func__);
+	LOGE("%s: Error!", __func__);
 	ril_request_complete(t, RIL_E_GENERIC_FAILURE, NULL, 0);
 }
 
@@ -420,7 +420,7 @@ void ril_request_hangup(RIL_Token t, void *data, size_t datalen)
 	
 	return;
 error:
-	ALOGE("%s: Error!", __func__);
+	LOGE("%s: Error!", __func__);
 	ril_request_complete(t, RIL_E_GENERIC_FAILURE, NULL, 0);
 }
 
@@ -441,7 +441,7 @@ void ril_request_hangup_waiting_or_background(RIL_Token t)
 				if (activeCtxt->token != 0)
 					/* pass error to the current request, another one is pending */
 					goto error;
-				ALOGE("%s: active callId = %d", __func__, activeCtxt->callId);
+				LOGE("%s: active callId = %d", __func__, activeCtxt->callId);
 			}
 			if(ril_data.calls[i]->call_state == RIL_CALL_HOLDING)
 			{
@@ -449,7 +449,7 @@ void ril_request_hangup_waiting_or_background(RIL_Token t)
 				if (holdCtxt->token != 0)
 					/* pass error to the current request, another one is pending */
 					goto error;
-				ALOGE("%s: hold callId = %d", __func__, holdCtxt->callId);
+				LOGE("%s: hold callId = %d", __func__, holdCtxt->callId);
 			}
 			if(ril_data.calls[i]->call_state == RIL_CALL_WAITING)
 			{
@@ -457,7 +457,7 @@ void ril_request_hangup_waiting_or_background(RIL_Token t)
 				if (waitCtxt->token != 0)
 					/* pass error to the current request, another one is pending */
 					goto error;
-				ALOGE("%s: wait callId = %d", __func__, waitCtxt->callId);
+				LOGE("%s: wait callId = %d", __func__, waitCtxt->callId);
 			}
 			if(ril_data.calls[i]->call_state == RIL_CALL_INCOMING)
 			{
@@ -465,46 +465,46 @@ void ril_request_hangup_waiting_or_background(RIL_Token t)
 				if (incomingCtxt->token != 0)
 					/* pass error to the current request, another one is pending */
 					goto error;
-				ALOGE("%s: incoming callId = %d", __func__, incomingCtxt->callId);
+				LOGE("%s: incoming callId = %d", __func__, incomingCtxt->callId);
 			}
 		}
 	}
 	if(waitCtxt && holdCtxt)
 	{
-		ALOGE("%s: waiting/hangup callId = %d", __func__, waitCtxt->callId);
-		ALOGE("%s: hold/holding callId = %d", __func__, holdCtxt->callId);
+		LOGE("%s: waiting/hangup callId = %d", __func__, waitCtxt->callId);
+		LOGE("%s: hold/holding callId = %d", __func__, holdCtxt->callId);
 		waitCtxt->token = t;
 		tapi_call_release(waitCtxt->callType, waitCtxt->callId, 0x0);
 	}
 	else if(waitCtxt && activeCtxt)
 	{
 
-		ALOGE("%s: waiting/hangup callId = %d", __func__, waitCtxt->callId);
-		ALOGE("%s: active/activate callId = %d", __func__, activeCtxt->callId);
+		LOGE("%s: waiting/hangup callId = %d", __func__, waitCtxt->callId);
+		LOGE("%s: active/activate callId = %d", __func__, activeCtxt->callId);
 		waitCtxt->token = t;
 		tapi_call_release(waitCtxt->callType, waitCtxt->callId, 0x0);
 	}
 	else if(activeCtxt)
 	{
-		ALOGE("%s: active/hangup callId = %d", __func__, activeCtxt->callId);
+		LOGE("%s: active/hangup callId = %d", __func__, activeCtxt->callId);
 		activeCtxt->token = t;
 		tapi_call_release(activeCtxt->callType, activeCtxt->callId, 0x0);
 	}
 	else if(holdCtxt)
 	{
-		ALOGE("%s: hold/hangup callId = %d", __func__, holdCtxt->callId);
+		LOGE("%s: hold/hangup callId = %d", __func__, holdCtxt->callId);
 		holdCtxt->token = t;
 		tapi_call_release(holdCtxt->callType, holdCtxt->callId, 0x0);
 	}
 	else if(waitCtxt)
 	{
-		ALOGE("%s: wait/hangup callId = %d", __func__, waitCtxt->callId);
+		LOGE("%s: wait/hangup callId = %d", __func__, waitCtxt->callId);
 		waitCtxt->token = t;
 		tapi_call_release(waitCtxt->callType, waitCtxt->callId, 0x0);
 	}
 	else if(incomingCtxt)
 	{
-		ALOGE("%s: incoming/hangup callId = %d", __func__, incomingCtxt->callId);
+		LOGE("%s: incoming/hangup callId = %d", __func__, incomingCtxt->callId);
 		incomingCtxt->token = t;
 		tapi_call_release(incomingCtxt->callType, incomingCtxt->callId, 0x0);
 	}
@@ -513,7 +513,7 @@ void ril_request_hangup_waiting_or_background(RIL_Token t)
 		ril_request_complete(t, RIL_E_SUCCESS, NULL, 0);
 	return;
 error:
-	ALOGE("%s: Error!", __func__);
+	LOGE("%s: Error!", __func__);
 	ril_request_complete(t, RIL_E_GENERIC_FAILURE, NULL, 0);
 }	
 
@@ -532,7 +532,7 @@ void ril_request_hangup_foreground_resume_background(RIL_Token t)
 				if (activeCtxt->token != 0)
 					/* pass error to the current request, another one is pending */
 					goto error;
-				ALOGE("%s: active callId = %d", __func__, activeCtxt->callId);
+				LOGE("%s: active callId = %d", __func__, activeCtxt->callId);
 			}
 			if(ril_data.calls[i]->call_state == RIL_CALL_HOLDING)
 			{
@@ -540,14 +540,14 @@ void ril_request_hangup_foreground_resume_background(RIL_Token t)
 				if (holdCtxt->token != 0)
 					/* pass error to the current request, another one is pending */
 					goto error;
-				ALOGE("%s: hold callId = %d", __func__, holdCtxt->callId);
+				LOGE("%s: hold callId = %d", __func__, holdCtxt->callId);
 			}
 		}
 	}
 	if(activeCtxt && holdCtxt)
 	{
-		ALOGE("%s: active/hangup callId = %d", __func__, activeCtxt->callId);
-		ALOGE("%s: hold/active callId = %d", __func__, holdCtxt->callId);
+		LOGE("%s: active/hangup callId = %d", __func__, activeCtxt->callId);
+		LOGE("%s: hold/active callId = %d", __func__, holdCtxt->callId);
 		holdCtxt->token = t;
 		tapi_call_release(activeCtxt->callType, activeCtxt->callId, 0x0);
 		usleep(300000);
@@ -555,13 +555,13 @@ void ril_request_hangup_foreground_resume_background(RIL_Token t)
 	}
 	else if(activeCtxt)
 	{
-		ALOGE("%s: active/hangup callId = %d", __func__, activeCtxt->callId);
+		LOGE("%s: active/hangup callId = %d", __func__, activeCtxt->callId);
 		activeCtxt->token = t;
 		tapi_call_release(activeCtxt->callType, activeCtxt->callId, 0x0);
 	}
 	else if(holdCtxt)
 	{
-		ALOGE("%s: hold/hangup callId = %d", __func__, holdCtxt->callId);
+		LOGE("%s: hold/hangup callId = %d", __func__, holdCtxt->callId);
 		holdCtxt->token = t;
 		tapi_call_release(holdCtxt->callType, holdCtxt->callId, 0x0);
 	}
@@ -570,20 +570,20 @@ void ril_request_hangup_foreground_resume_background(RIL_Token t)
 		ril_request_complete(t, RIL_E_SUCCESS, NULL, 0);
 	return;
 error:
-	ALOGE("%s: Error!", __func__);
+	LOGE("%s: Error!", __func__);
 	ril_request_complete(t, RIL_E_GENERIC_FAILURE, NULL, 0);
 }
 
 void ril_request_answer(RIL_Token t)
 {
 	int i;
-	ALOGE("%s: Test me!", __func__);
+	LOGE("%s: Test me!", __func__);
 	
 	for(i = 0; i < MAX_CALLS; i++)
 	{
 		if(ril_data.calls[i] && ril_data.calls[i]->callId != 0xFFFFFFFF && ril_data.calls[i]->call_state == RIL_CALL_INCOMING)
 		{
-			ALOGE("%s: answering callId = %d", __func__, ril_data.calls[i]->callId);
+			LOGE("%s: answering callId = %d", __func__, ril_data.calls[i]->callId);
 			if (ril_data.calls[i]->token != 0)
 				/* pass error to the current request, another one is pending */
 				goto error;
@@ -593,7 +593,7 @@ void ril_request_answer(RIL_Token t)
 	}
 	return;
 error:
-	ALOGE("%s: Error!", __func__);
+	LOGE("%s: Error!", __func__);
 	ril_request_complete(t, RIL_E_GENERIC_FAILURE, NULL, 0);
 }
 
@@ -605,7 +605,7 @@ void ril_request_last_call_fail_cause(RIL_Token t)
 {
 	RIL_LastCallFailCause fail_cause;
 	
-	ALOGE("%s: Implement me!", __func__);
+	LOGE("%s: Implement me!", __func__);
 	
 	fail_cause = CALL_FAIL_NORMAL;
 
@@ -614,7 +614,7 @@ void ril_request_last_call_fail_cause(RIL_Token t)
 
 void ril_request_dtmf(RIL_Token t, void *data, int length)
 {
-	ALOGE("%s: Implement me!", __func__);
+	LOGE("%s: Implement me!", __func__);
 	
 	ril_request_complete(t, RIL_E_SUCCESS, NULL, 0);
 }
@@ -630,7 +630,7 @@ void ril_request_dtmf_start(RIL_Token t, void *data, int length)
 	tone = *((unsigned char *) data);
 
 	if (ril_data.state.dtmf_tone != 0) {
-		ALOGD("%s: Another tone wasn't stopped, stopping it before anything", __func__);
+		LOGD("%s: Another tone wasn't stopped, stopping it before anything", __func__);
 		tapi_stop_dtmf(activeCall->callId);
 		usleep(300);
 	}
@@ -644,7 +644,7 @@ void ril_request_dtmf_start(RIL_Token t, void *data, int length)
 	return;
 
 error:
-	ALOGE("%s: Error!", __func__);
+	LOGE("%s: Error!", __func__);
 	ril_request_complete(t, RIL_E_GENERIC_FAILURE, NULL, 0);
 }
 
@@ -661,7 +661,7 @@ void ril_request_dtmf_stop(RIL_Token t)
 
 	ril_data.tokens.dtmf_stop = t;
 error:
-	ALOGE("%s: Error!", __func__);
+	LOGE("%s: Error!", __func__);
 	ril_request_complete(t, RIL_E_GENERIC_FAILURE, NULL, 0);
 }
 
@@ -681,7 +681,7 @@ void ril_request_switch_waiting_or_holding_and_active(RIL_Token t)
 				if (activeCtxt->token != 0)
 					/* pass error to the current request, another one is pending */
 					goto error;
-				ALOGE("%s: active callId = %d", __func__, activeCtxt->callId);
+				LOGE("%s: active callId = %d", __func__, activeCtxt->callId);
 			}
 			if(ril_data.calls[i]->call_state == RIL_CALL_HOLDING)
 			{
@@ -689,7 +689,7 @@ void ril_request_switch_waiting_or_holding_and_active(RIL_Token t)
 				if (holdCtxt->token != 0)
 					/* pass error to the current request, another one is pending */
 					goto error;
-				ALOGE("%s: hold callId = %d", __func__, holdCtxt->callId);
+				LOGE("%s: hold callId = %d", __func__, holdCtxt->callId);
 			}
 			if(ril_data.calls[i]->call_state == RIL_CALL_WAITING)
 			{
@@ -697,21 +697,21 @@ void ril_request_switch_waiting_or_holding_and_active(RIL_Token t)
 				if (waitCtxt->token != 0)
 					/* pass error to the current request, another one is pending */
 					goto error;
-				ALOGE("%s: wait callId = %d", __func__, waitCtxt->callId);
+				LOGE("%s: wait callId = %d", __func__, waitCtxt->callId);
 			}
 		}
 	}
 	if(activeCtxt && holdCtxt)
 	{
-		ALOGE("%s: active/holding callId = %d", __func__, activeCtxt->callId);
-		ALOGE("%s: hold/activating callId = %d", __func__, holdCtxt->callId);
+		LOGE("%s: active/holding callId = %d", __func__, activeCtxt->callId);
+		LOGE("%s: hold/activating callId = %d", __func__, holdCtxt->callId);
 		activeCtxt->token = t;
 		tapi_calls_swap(activeCtxt->callId, holdCtxt->callId);
 	}
 	else if(activeCtxt && waitCtxt)
 	{
-		ALOGE("%s: active/holding callId = %d", __func__, activeCtxt->callId);
-		ALOGE("%s: waiting/activating callId = %d", __func__, waitCtxt->callId);
+		LOGE("%s: active/holding callId = %d", __func__, activeCtxt->callId);
+		LOGE("%s: waiting/activating callId = %d", __func__, waitCtxt->callId);
 		tapi_call_hold(waitCtxt->callId);
 
 		usleep(500000);
@@ -720,20 +720,20 @@ void ril_request_switch_waiting_or_holding_and_active(RIL_Token t)
 	}
 	else if(holdCtxt && waitCtxt)
 	{
-		ALOGE("%s: hold/holding callId = %d", __func__, holdCtxt->callId);
-		ALOGE("%s: wait/activating callId = %d", __func__, waitCtxt->callId);
+		LOGE("%s: hold/holding callId = %d", __func__, holdCtxt->callId);
+		LOGE("%s: wait/activating callId = %d", __func__, waitCtxt->callId);
 		waitCtxt->token = 0;
 		tapi_call_answer(waitCtxt->callType, waitCtxt->callId);
 	}
 	else if(activeCtxt)
 	{
-		ALOGE("%s: active/holding callId = %d", __func__, activeCtxt->callId);
+		LOGE("%s: active/holding callId = %d", __func__, activeCtxt->callId);
 		activeCtxt->token = t;
 		tapi_call_hold(activeCtxt->callId);
 	}
 	else if(holdCtxt)
 	{
-		ALOGE("%s: hold/activating callId = %d", __func__, holdCtxt->callId);
+		LOGE("%s: hold/activating callId = %d", __func__, holdCtxt->callId);
 		holdCtxt->token = t;
 		tapi_call_activate(holdCtxt->callId);
 	}
@@ -743,6 +743,6 @@ void ril_request_switch_waiting_or_holding_and_active(RIL_Token t)
 	return;
 
 error:
-	ALOGE("%s: Error!", __func__);
+	LOGE("%s: Error!", __func__);
 	ril_request_complete(t, RIL_E_GENERIC_FAILURE, NULL, 0);
 }

@@ -43,7 +43,7 @@ int ril_net_select_register(char *plmn, tapiNetSearchCnf net_select_entry)
 	net_select->plmn = plmn;
 	net_select->net_select_entry = net_select_entry;
 
-	ALOGE("%s: added plmn %s", __func__, net_select->plmn);
+	LOGE("%s: added plmn %s", __func__, net_select->plmn);
 
 	list_end = ril_data.net_select_list;
 	while (list_end != NULL && list_end->next != NULL)
@@ -179,7 +179,7 @@ void ipc_network_radio_info(void* data)
 		break;
 	}
 
-	ALOGD("Signal Strength is %d\n", asu);
+	LOGD("Signal Strength is %d\n", asu);
 
 	memset(&ss, 0, sizeof(ss));
 	memset(&ss.LTE_SignalStrength, -1, sizeof(ss.LTE_SignalStrength));
@@ -283,7 +283,7 @@ void ipc_network_nitz_info(void* data)
 	tapiNitzInfo* nitz;
 	char str[128];
 	
-	ALOGD("Received NITZ... dumping");
+	LOGD("Received NITZ... dumping");
 	hex_dump(data, 0x70);
 	
 	nitz = (tapiNitzInfo*) data;
@@ -308,12 +308,12 @@ void ipc_network_search_cnf(void* data)
 
 	num_entries = ((uint8_t *)data)[0];
 
-	ALOGD("%s: Packet with %d entries\n", __func__, num_entries);
+	LOGD("%s: Packet with %d entries\n", __func__, num_entries);
 	count = 0;
 
 	if (ril_data.net_select_list != NULL)
 	{
-		ALOGD("%s: List is not empty, cleaning...\n", __func__);
+		LOGD("%s: List is not empty, cleaning...\n", __func__);
 		ril_net_select_unregister();
 	}
 
@@ -342,7 +342,7 @@ void ipc_network_search_cnf(void* data)
 			count++;
 		}
 	}
-	ALOGD("%s: List created with %d entries\n", __func__, count);
+	LOGD("%s: List created with %d entries\n", __func__, count);
 
 	if (count == 0)
 	{
@@ -587,11 +587,11 @@ void ril_request_set_network_selection_manual(RIL_Token t, void *data, size_t da
 	net_select = ril_net_select_find_plmn((char *)data);
 
 	if (!net_select) {
-		ALOGE("Unable to find network entry, aborting");
+		LOGE("Unable to find network entry, aborting");
 		goto error;
 	}
 
-	ALOGE("%s: found plmn %s, type %d", __func__, net_select->plmn, net_select->net_select_entry.systemType);
+	LOGE("%s: found plmn %s, type %d", __func__, net_select->plmn, net_select->net_select_entry.systemType);
 
 	tapi_network_select(&net_select->net_select_entry);
 
